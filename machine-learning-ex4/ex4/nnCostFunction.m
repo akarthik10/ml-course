@@ -79,9 +79,35 @@ J =    (1/m) * sum(sum(-yk .* log(h_theta) - (1-yk) .* log(1-h_theta)));
 J = J + lambda/ (2*m) *(sum(sum(Theta1(:,2:size(Theta1,2)) .^2)) + sum(sum(Theta2(:,2:size(Theta2,2)) .^2)));
 
 
+for t=1:m
+	a1 = X(t, :);
+	z2 = Theta1 * a1';
+	
+	a2 = sigmoid(z2);
 
+	z2 = [1; z2];
+	a2 = [1; a2];
+	z3 = Theta2 * a2;
+	a3 = sigmoid(z3);
 
+	delta3 = a3 - yk(:, t);
+	delta2 = (Theta2' * delta3) .* sigmoidGradient(z2);
 
+	delta2 = delta2 ( 2:end);
+
+	Theta2_grad = Theta2_grad + (delta3) * a2';
+	Theta1_grad = Theta1_grad + (delta2) * a1;
+
+end
+
+Theta1_grad(:, 1) = Theta1_grad(:, 1) ./ m;
+	
+	Theta1_grad(:, 2:end) = Theta1_grad(:, 2:end) ./ m + ((lambda/m) * Theta1(:, 2:end));
+	
+	
+	Theta2_grad(:, 1) = Theta2_grad(:, 1) ./ m;
+	
+	Theta2_grad(:, 2:end) = Theta2_grad(:, 2:end) ./ m + ((lambda/m) * Theta2(:, 2:end));
 
 
 
